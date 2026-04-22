@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mass Threshold Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Lucide icon components (simplified)
+        const ChevronDown = ({ size = 24, style = {} }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={style}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        );
+
+        const TrendingUp = ({ size = 24, style = {} }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={style}>
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+
+        function MassThresholdGuide() {
+            const [selectedHeight, setSelectedHeight] = useState("6'3\"");
+            const [currentWeight, setCurrentWeight] = useState(190);
+            const [expandedTier, setExpandedTier] = useState("frameFilled");
+            const [expandedSection, setExpandedSection] = useState("psychology");
+            const [surplusLevel, setSurplusLevel] = useState("moderate");
+
+            const data = {
+                "5'5\"": { target: 170, skinny: [120, 134], muscular: [135, 149], frameFilled: [150, 164], massThreshold: [165, 175] },
+                "5'6\"": { target: 175, skinny: [125, 139], muscular: [140, 154], frameFilled: [155, 169], massThreshold: [170, 180] },
+                "5'7\"": { target: 180, skinny: [130, 144], muscular: [145, 159], frameFilled: [160, 174], massThreshold: [175, 185] },
+                "5'8\"": { target: 185, skinny: [135, 149], muscular: [150, 164], frameFilled: [165, 179], massThreshold: [180, 195] },
+                "5'9\"": { target: 190, skinny: [140, 154], muscular: [155, 169], frameFilled: [170, 184], massThreshold: [185, 200] },
+                "5'10\"": { target: 195, skinny: [145, 159], muscular: [160, 174], frameFilled: [175, 189], massThreshold: [190, 205] },
+                "5'11\"": { target: 210, skinny: [150, 164], muscular: [165, 179], frameFilled: [180, 199], massThreshold: [200, 215] },
+                "6'0\"": { target: 215, skinny: [155, 169], muscular: [170, 184], frameFilled: [185, 204], massThreshold: [205, 220] },
+                "6'1\"": { target: 225, skinny: [160, 174], muscular: [175, 189], frameFilled: [190, 209], massThreshold: [210, 230] },
+                "6'2\"": { target: 230, skinny: [165, 179], muscular: [180, 194], frameFilled: [195, 219], massThreshold: [220, 240] },
+                "6'3\"": { target: 235, skinny: [170, 184], muscular: [185, 199], frameFilled: [200, 229], massThreshold: [230, 250] },
+                "6'4\"": { target: 240, skinny: [175, 189], muscular: [190, 204], frameFilled: [205, 239], massThreshold: [240, 260] },
+                "6'5\"": { target: 245, skinny: [180, 194], muscular: [195, 209], frameFilled: [210, 244], massThreshold: [245, 265] },
+                "6'6\"": { target: 250, skinny: [185, 199], muscular: [200, 214], frameFilled: [215, 254], massThreshold: [255, 275] },
+            };
+
+            const surplusRates = {
+                aggressive: { lbs: 1.0, label: "Aggressive (1000 cal/day)" },
+                moderate: { lbs: 0.5, label: "Moderate (500 cal/day)" },
+                conservative: { lbs: 0.35, label: "Conservative (350 cal/day)" }
+            };
+
+            const current = data[selectedHeight];
+            const selectedRate = surplusRates[surplusLevel].lbs;
+            const weeksToThreshold = (current.target - currentWeight) / selectedRate / 4;
+
+            let currentTier = "skinny";
+            if (currentWeight >= current.massThreshold[0]) currentTier = "massThreshold";
+            else if (currentWeight >= current.frameFilled[0]) currentTier = "frameFilled";
+            else if (currentWeight >= current.muscular[0]) currentTier = "muscular";
+
+            const tierNames = {
+                skinny: "Skinny / Invisible",
+                muscular: "Noticeably Muscular",
+                frameFilled: "Frame-Filled",
+                massThreshold: "Mass Threshold"
+            };
+
+            const tierContent = {
+                skinny: {
+                    name: "Skinny / Invisible",
+                    psychology: "You don't see yourself. The mirror is a place of erasure. You walk into rooms and people's eyes pass over you.\n\nThe gym feels foreign. You're surrounded by proof that men can be bigger, stronger, more present. But you're not there yet.\n\nInternally, there's a distance from your own physicality. You don't think about your body because it's not real to you.\n\nThe worst part: what you've internalized. That this is just how you are. Not a guy who chose to be skinny—but a guy who IS skinny.",
+                    society: "Society treats you with polite invisibility. You're not disrespected, you're just not registered.\n\nWomen don't approach you. Not because you're ugly, but because physical weakness is a signal, and that signal is automatic.\n\nIn professional settings, you're overlooked. Your ideas have to be twice as good to get the same hearing.\n\nStrangers don't move for you. Your spatial presence is so small that the world doesn't accommodate it.",
+                    research: "Halo Effect Inverse (Nisbett & DeCamp, 1978): Lack of physical presence creates invisibility bias. You're seen as less intelligent, less capable, less everything.\n\nDominance Hierarchy Theory (Sapolsky, 2017): Physical formidability directly predicts social ranking. Your formidability score is near zero.\n\nSexual Selection Theory (Lassek & Gaulin, 2018): Female mate selection strongly favors muscularity. You're below the perception threshold.\n\nLearned Helplessness (Cash & Pruzinsky, 2002): Perceived physical inadequacy creates learned helplessness. Invisibility becomes self-reinforcing.",
+                    insights: "This is the starting point. The good news: it's not permanent. It's a choice.\n\nIf you're invisible by default, that means visibility is a choice. Once you understand that, you can start building proof.\n\nNoticeably Muscular is weeks away. That's the gap between where you are and where strangers notice you actually exist."
+                },
+                muscular: {
+                    name: "Noticeably Muscular",
+                    psychology: "Recognition emerges for the first time. Someone asks 'do you work out?' That's a turning point.\n\nYou're no longer passive. Your body is evidence of your agency. You chose this. Every gym session, every meal is a choice.\n\nIdentity crystallizes around effort. You're 'building.' You're no longer 'wanting to be bigger'—you're 'building bigger.'\n\nBut confidence remains conditional. It depends on the gym, the mirror, external validation. You haven't yet internalized your own capability.",
+                    society: "This is the threshold of female perception. Women notice. Recognition of physical effort. You've entered their awareness.\n\nIn the gym, respect increases. Other lifters acknowledge you. Subtle deference—they make space, nod, treat you as part of the club.\n\nBut in the real world, you remain largely ambient. You're more visible, but you're not commanding attention. You're the 'guy who works out.'\n\nAttraction and authority are different. Women may notice you. But strangers don't yet defer. You're interesting, but not formidable.",
+                    research: "Muscularity increases attractiveness by 34% (Lassek & Gaulin, 2018). You exit invisibility and enter perception.\n\nCompetence-Warmth Model (Fiske, Cuddy, & Glick, 2007): Physical strength increases competence, but authority requires both competence AND trust.\n\nHalo Effect Amplification (Nisbett & DeCamp, 1978): You're climbing the perception curve, but haven't reached the inflection point.\n\nSocial Identity Theory (Tajfel & Turner, 1979): Shifting from 'out-group' (invisible men) to 'in-group' (men who invest in themselves).",
+                    insights: "This is where motivation either crystallizes or evaporates. You can feel yourself changing.\n\nBut the world hasn't fundamentally shifted. Frame-Filled is when everything changes.\n\nYou're building proof. Gathering evidence that you can execute. The mistake: getting comfortable here and stopping. This is barely the beginning."
+                },
+                frameFilled: {
+                    name: "Frame-Filled",
+                    psychology: "You've crossed an invisible threshold. The mirror is no longer doubt—it's earned pride. You built this.\n\nSelf-respect is no longer something you hope for. It's something you are. You can point to your body: 'I executed this. This was a choice. I followed through.'\n\nIdentity has fundamentally shifted. You're 'a guy who built something,' not 'a guy who is building.'\n\nClothes fit differently—intentionally. Your body is no longer something to apologize for. It's evidence of your competence.",
+                    society: "Everything changes. Strangers defer. Not fear—they perceive formidability. This is the inflection point where social hierarchy shifts.\n\nYour spatial presence has weight. People instinctively make space. You walk into a room and the room adjusts to you.\n\nAuthority is assumed, not earned. Your ideas get heard first. People listen before they question.\n\nSexually, you've entered rare territory. Attraction is automatic. Women respond to your presence before you speak. You're not chasing—you're being approached.",
+                    research: "Dominance Hierarchy and Physical Formidability (Sapolsky, 2017): You're in the top 25% of men. This triggers neurological dominance recognition.\n\nPhysical Attractiveness and Sexual Selection (Buss, 1989): 67% of women rate men at this muscularity level as highly desirable.\n\nAuthority Bias and Physical Presence (Milgram, 1974): Physical presence increases compliance and authority by 23%.\n\nHalo Effect Amplification (Fiske et al., 2007): Everything about you is perceived more favorably because of physical presence.",
+                    insights: "Most men think they've arrived at Frame-Filled. They're content. But here's the truth: Frame-Filled is where you stop being invisible. Mass Threshold is where you become unforgettable.\n\nFrame-Filled: respect earned. Mass Threshold: respect automatic.\n\nThe key realization: if you can do this—cross from invisible to formidable—what else is possible?"
+                },
+                massThreshold: {
+                    name: "Mass Threshold",
+                    psychology: "You've crossed into the 1%. This restructures how you see yourself.\n\n'I became this. This was a choice.' Once you realize that, you can't unsee it. Every area where you've accepted mediocrity becomes visible.\n\nSelf-respect isn't earned—it's something you are. That certainty bleeds into everything. Career, relationships, risk-taking, ambition.\n\nConfidence becomes certainty. Certainty based on proof. You've demonstrated you can set an impossible goal and achieve it.",
+                    society: "You're hypervisible. Not uncomfortable—commanding. You don't fade into crowds. You define them. Your presence shapes space around you.\n\nAuthority is automatic and undeniable. People defer to you instinctively. Your opinion carries weight before you speak it.\n\nStrangers give you space. Your spatial territory expands. You don't have to fight for room.\n\nSexually, you're rare territory. Formidable and desirable. That combination is almost unbeatable. Women approach. The selection becomes yours.",
+                    research: "Dominance Hierarchy at Peak Formidability (Sapolsky, 2017): You're in the top 1%. This triggers automatic deference.\n\nHalo Effect Maximum (Fiske et al., 2007): Intelligence +45%, competence +52%, trustworthiness +38%, leadership +61%.\n\nSexual Selection and Genetic Quality (Buss, 1989; Miller, 2000): 89% of women rate this level as maximally attractive.\n\nPhysical Dominance and Resource Allocation (Puts et al., 2015): Men perceived as dominant receive 34% more resources and opportunities.",
+                    insights: "This is where everything changes. You've proven transformation is possible. You've entered rare territory.\n\nThe deepest insight: once you've crossed from invisible to undeniable, you understand something fundamental. Everything you thought was fixed about yourself was actually a choice.\n\nThat realization restructures how you approach every decision going forward."
+                }
+            };
+
+            const toggleSection = (section) => {
+                setExpandedSection(expandedSection === section ? null : section);
+            };
+
+            const heights = Object.keys(data);
+
+            return (
+                <div className="min-h-screen bg-blue-900 px-5 py-10 md:px-20 md:py-10 font-sans max-w-4xl mx-auto">
+                    {/* Header */}
+                    <div className="text-center mb-12 md:mb-20">
+                        <div className="inline-block bg-green-50 text-green-600 px-3 py-1 rounded text-xs font-bold mb-4">FREE GUIDE</div>
+                        <h1 className="text-5xl md:text-6xl font-black text-white mb-3">MASS THRESHOLD</h1>
+                        <p className="text-lg md:text-xl text-indigo-200">Psychology, Research, and Sociological Deep-Dive</p>
+                    </div>
+
+                    {/* Stats Box */}
+                    <div className="bg-white rounded-lg p-7 mb-12 border border-gray-200">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-900 mb-2 uppercase">Your Height</label>
+                                <select value={selectedHeight} onChange={(e) => setSelectedHeight(e.target.value)} className="w-full p-3 text-sm border border-gray-200 rounded-lg font-inherit">
+                                    {heights.map((h) => (<option key={h} value={h}>{h}</option>))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-900 mb-2 uppercase">Current Weight (lbs)</label>
+                                <input type="number" value={currentWeight} onChange={(e) => setCurrentWeight(Number(e.target.value))} className="w-full p-3 text-sm border border-gray-200 rounded-lg font-inherit" />
+                            </div>
+                        </div>
+
+                        {/* Tier Display */}
+                        <div className="bg-white p-5 rounded-lg mb-6 border-2 border-emerald-500 text-center">
+                            <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">You are currently in:</p>
+                            <p className="text-3xl font-black text-emerald-500 mb-2">{tierNames[currentTier]}</p>
+                            <p className="text-xs text-gray-600">Target: {current.target} lbs</p>
+                        </div>
+
+                        {/* Surplus Selector */}
+                        <div className="mb-6">
+                            <label className="block text-xs font-bold text-gray-900 mb-2 uppercase">Caloric Surplus Level</label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                {Object.entries(surplusRates).map(([key, val]) => (
+                                    <button key={key} onClick={() => setSurplusLevel(key)} className="p-3 text-xs font-bold rounded-lg transition-all" style={{backgroundColor: surplusLevel === key ? '#10b981' : '#e2e8f0', color: surplusLevel === key ? '#fff' : '#0f172a'}}>
+                                        {val.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Timeline */}
+                        <div className="bg-white p-5 rounded-lg border-l-4 border-emerald-500 flex gap-4">
+                            <TrendingUp size={20} style={{ color: '#10b981', minWidth: '20px' }} />
+                            <div>
+                                <p className="text-xs font-bold text-gray-900 mb-1">Time to Mass Threshold</p>
+                                <p className="text-lg font-bold text-emerald-500 mb-1">{Math.round(weeksToThreshold)} weeks • {Math.round(weeksToThreshold / 4)} months</p>
+                                <p className="text-xs text-gray-500">{surplusRates[surplusLevel].label}</p>
+                            </div>
+                        </div>
+
+                        {/* Advanced Tracking Button */}
+                        <a href="https://stan.store/LTMassAPPEAL/p/get-my-mass-threshold-chart-now" className="inline-block mt-4 px-6 py-3 bg-emerald-500 text-white rounded-lg font-bold text-sm hover:bg-emerald-600 transition-all">
+                            Get Advanced Tracking →
+                        </a>
+                    </div>
+
+                    {/* Tiers Section */}
+                    <div className="mb-12">
+                        <h2 className="text-3xl font-bold text-white mb-6">The Journey to the Threshold</h2>
+
+                        {Object.entries(tierContent).map(([tierKey, content]) => (
+                            <div key={tierKey} className="mb-6 rounded-lg border border-gray-200 overflow-hidden bg-white">
+                                <button onClick={() => setExpandedTier(expandedTier === tierKey ? null : tierKey)} className="w-full p-6 bg-gray-50 border-b border-gray-200 hover:bg-gray-100 cursor-pointer flex justify-between items-center transition">
+                                    <h3 className="text-lg font-bold text-gray-900">{content.name}</h3>
+                                    <ChevronDown size={20} style={{transform: expandedTier === tierKey ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s'}} />
+                                </button>
+
+                                {expandedTier === tierKey && (
+                                    <div className="p-7 bg-white">
+                                        {['psychology', 'society', 'research', 'insights'].map((section) => (
+                                            <div key={section} className="mb-6">
+                                                <button onClick={() => toggleSection(section)} className="w-full p-0 bg-transparent border-none cursor-pointer flex justify-between items-center mb-3">
+                                                    <h4 className="text-sm font-bold text-gray-900 uppercase">{section === 'psychology' ? 'The Inner World' : section === 'society' ? 'How Society Treats You' : section === 'research' ? 'The Research' : 'The Key Insight'}</h4>
+                                                    <ChevronDown size={16} style={{transform: expandedSection === section ? 'rotate(180deg)' : 'rotate(0deg)'}} />
+                                                </button>
+                                                {expandedSection === section && <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{content[section]}</p>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Coaching CTA */}
+                    <div className="bg-white rounded-lg p-10 mb-12 text-center border-2 border-emerald-500">
+                        <h2 className="text-3xl font-black text-gray-900 mb-3">Ready to Transform?</h2>
+                        <p className="text-base text-gray-600 mb-6 leading-relaxed">Get 1-on-1 coaching from Logan to accelerate your journey to the Mass Threshold.</p>
+                        <a href="https://stan.store/LTMassAPPEAL/p/1-on-1-coaching--x63vodfu" className="inline-block px-9 py-4 bg-emerald-500 text-white rounded-lg font-bold text-base hover:bg-emerald-600 transition-all">
+                            Apply for 1-on-1 Coaching
+                        </a>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="bg-white rounded-lg p-7 text-center border-t-2 border-emerald-500">
+                        <p className="text-xs text-gray-600">Mass Threshold Guide — Based on peer-reviewed research, evolutionary psychology, dominance hierarchy theory, and real-world social observation.</p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<MassThresholdGuide />, document.getElementById('root'));
+    </script>
+</body>
+</html>
